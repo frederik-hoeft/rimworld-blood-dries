@@ -1,6 +1,0 @@
-G:\SteamLibrary\steamapps\workshop\content\294100\2580650687\1.5\Source\Izzimon.BloodDries\bin\Release\Izzimon.BloodDries.dll
-G:\SteamLibrary\steamapps\workshop\content\294100\2580650687\1.5\Source\Izzimon.BloodDries\bin\Release\Izzimon.BloodDries.pdb
-G:\SteamLibrary\steamapps\workshop\content\294100\2580650687\1.5\Source\Izzimon.BloodDries\obj\Release\Izzimon.BloodDries.csproj.AssemblyReference.cache
-G:\SteamLibrary\steamapps\workshop\content\294100\2580650687\1.5\Source\Izzimon.BloodDries\obj\Release\Izzimon.BloodDries.csproj.CoreCompileInputs.cache
-G:\SteamLibrary\steamapps\workshop\content\294100\2580650687\1.5\Source\Izzimon.BloodDries\obj\Release\Izzimon.BloodDries.dll
-G:\SteamLibrary\steamapps\workshop\content\294100\2580650687\1.5\Source\Izzimon.BloodDries\obj\Release\Izzimon.BloodDries.pdb
