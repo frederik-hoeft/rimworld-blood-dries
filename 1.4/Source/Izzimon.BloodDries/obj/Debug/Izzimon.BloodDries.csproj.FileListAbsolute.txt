@@ -1,0 +1,4 @@
+D:\Solutions\rimworld-mods\BloodDries\1.3\Assemblies\Izzimon.BloodDries.dll
+D:\Solutions\rimworld-mods\BloodDries\1.3\Source\Izzimon.BloodDries\obj\Debug\Izzimon.BloodDries.csproj.AssemblyReference.cache
+D:\Solutions\rimworld-mods\BloodDries\1.3\Source\Izzimon.BloodDries\obj\Debug\Izzimon.BloodDries.csproj.CoreCompileInputs.cache
+D:\Solutions\rimworld-mods\BloodDries\1.3\Source\Izzimon.BloodDries\obj\Debug\Izzimon.BloodDries.dll
