@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Verse;
 
-namespace Th3Fr3d.BloodDries;
+namespace BloodDries.Graphics;
 
 public class ColoredGraphic_ClusterTight : Graphic_ClusterTight
 {

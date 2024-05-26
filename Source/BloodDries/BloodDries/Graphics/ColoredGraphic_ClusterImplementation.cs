@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 using Verse;
 
-namespace Th3Fr3d.BloodDries;
+namespace BloodDries.Graphics;
 
 internal readonly struct ColoredGraphic_ClusterImplementation(Graphic_Cluster parentCluster)
 {
     public Graphic GetColoredVersion(Shader newShader, Color newColor, Color newColorTwo)
     {
-        Logger.Debug($"{nameof(ColoredGraphic_ClusterImplementation)}.{nameof(GetColoredVersion)} called with color {newColor} for cluster type {parentCluster.GetType().Name}");
+        Logger.LogVerbose($"{nameof(ColoredGraphic_ClusterImplementation)}.{nameof(GetColoredVersion)} called with color {newColor} for cluster type {parentCluster.GetType().Name}");
 
         ColoredGraphic_Cluster coloredVersion = new();
         GraphicRequest graphicRequest = new()

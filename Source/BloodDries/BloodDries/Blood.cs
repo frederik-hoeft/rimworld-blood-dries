@@ -1,32 +1,22 @@
-﻿using RimWorld;
-using System;
+﻿using BloodDries.Extensions;
+using RimWorld;
 using UnityEngine;
 using Verse;
 
-namespace Th3Fr3d.BloodDries;
+namespace BloodDries;
 
 public class Blood : Filth
 {
-    // to add to the def to configure later
-    private static readonly int FreshBloodR = 131;
-    private static readonly int FreshBloodG = 34;
-    private static readonly int FreshBloodB = 34;
+    // RGBA 131, 34, 34, 180
+    private static readonly Color _freshBloodColor = new(131f / 255f, 34f / 255f, 34f / 255f, 180f / 255f);
+    // RGBA 35, 14, 14, 15
+    private static readonly Color _driedBloodColor = new(35f / 255f, 14f / 255f, 14f / 255f, 15f / 255f);
 
-    private static readonly int DriedBloodR = 35;
-    private static readonly int DriedBloodG = 14;
-    private static readonly int DriedBloodB = 14;
-
-    private static readonly int DefaultAlpha = 180;
-    private static readonly int MinimumAlpha = 15;
-
-    private static readonly int StandardTemperature = 20;
-    private static readonly int DaysUntilFullyDryAtStandardTemperature = 3;
+    // we don't want to publish a whole range of shades, as that will fill up the graphic database 
+    private const float PublishPercentageStep = 0.20f;  // only publish every 20% step change
 
     private float _percentageDried = 0;
     private float _percentageEroded = 0;
-
-    // we don't want to publish a whole range of shades, as that will fill up the graphic database 
-    private static readonly float PublishPercentageStep = 0.20f;  // only publish every 20% step change
     private float _driedPublishPercentage = 0;
     private float _erodedPublishPercentage = 0;
 
@@ -34,7 +24,7 @@ public class Blood : Filth
     {
         base.SpawnSetup(map, respawningAfterLoad);
 
-        if (!FilthMaker.TerrainAcceptsFilth(base.Map.terrainGrid.TerrainAt(base.Position), def))
+        if (!FilthMaker.TerrainAcceptsFilth(Map.terrainGrid.TerrainAt(Position), def))
         {
             // it will have been destroyed already, so do nothing.
             return;
@@ -46,26 +36,13 @@ public class Blood : Filth
             UpdatePublishPercentage("erosion", ref _erodedPublishPercentage, _percentageEroded);
         }
 
-        Logger.Debug($"{this} will disappear in {DisappearAfterTicks / 60000f} days");
+        Logger.LogVerbose($"{this} will disappear in {DisappearAfterTicks / 60000f} days");
     }
 
     public override Color DrawColor
     {
-        get
-        {
-            float red = GetWeightedAverage(FreshBloodR, DriedBloodR, _driedPublishPercentage) / 255;
-            float green = GetWeightedAverage(FreshBloodG, DriedBloodG, _driedPublishPercentage) / 255;
-            float blue = GetWeightedAverage(FreshBloodB, DriedBloodB, _driedPublishPercentage) / 255;
-            float alpha = GetWeightedAverage(DefaultAlpha, MinimumAlpha, _erodedPublishPercentage) / 255;
-
-            Color color = new(red, green, blue, alpha);
-
-            return color;
-        }
-        set
-        {
-            Log.Error($"Cannot set instance color on non-ThingWithComps {LabelCap} at {Position}.");
-        }
+        get => _freshBloodColor.Lerp(_driedBloodColor, percentage: _driedPublishPercentage, alphaPercentage: _erodedPublishPercentage);
+        set => Log.Error($"[{nameof(BloodDries)}] Cannot set instance color on non-ThingWithComps {LabelCap} at {Position}.");
     }
 
     public override void TickLong()
@@ -97,20 +74,27 @@ public class Blood : Filth
             return false;
         }
 
-        float temperatureModifier = 1f;
+        float temperatureMultiplier = 1f;
+        float belowFreezingPenalty = 0f;
         if (AmbientTemperature <= 0)
         {
-            return false;  // it is frozen, don't dry any more
+            // it is frozen, apply a penalty (default: no drying at all)
+            belowFreezingPenalty = BloodDriesMod.Settings.belowFreezingPenalty;
         }
-        if (AmbientTemperature > StandardTemperature)
+        // invert the penalty to get a multiplier
+        float belowFreezingMultiplier = 1f - belowFreezingPenalty;
+        float standardTemperature = BloodDriesMod.Settings.standardTemperature;
+        if (AmbientTemperature > standardTemperature)
         {
-            temperatureModifier += (AmbientTemperature - StandardTemperature) * 2 / StandardTemperature;  // add a bonus if the temperature is hot
+            // the hotter it is, the faster it dries
+            temperatureMultiplier += (AmbientTemperature - standardTemperature) * 2f / standardTemperature;
         }
 
-        float percentageMoreToDry = 2000f / (60000 * DaysUntilFullyDryAtStandardTemperature) * temperatureModifier;  // long tick = 2000 ticks.  one day in game time = 60000 ticks.
+        // long tick = 2000 ticks.  one day in game time = 60000 ticks.
+        float preMultipliers = 2000f / (60000f * BloodDriesMod.Settings.daysUntilFullyDryAtStandardTemperature);
+        float percentageMoreToDry = preMultipliers * temperatureMultiplier * belowFreezingMultiplier;
 
-        _percentageDried += percentageMoreToDry;
-        _percentageDried = Math.Min(_percentageDried, 1f);
+        _percentageDried = Mathf.Clamp01(_percentageDried + percentageMoreToDry);
 
         return UpdatePublishPercentage("dryness", ref _driedPublishPercentage, _percentageDried);
     }
@@ -119,8 +103,7 @@ public class Blood : Filth
     {
         float percentageMoreToErode = 2000f / DisappearAfterTicks;
 
-        _percentageEroded += percentageMoreToErode;
-        _percentageEroded = Math.Min(_percentageEroded, 1f);
+        _percentageEroded = Mathf.Clamp01(_percentageEroded + percentageMoreToErode);
 
         return UpdatePublishPercentage("erosion", ref _erodedPublishPercentage, _percentageEroded);
     }
@@ -128,23 +111,17 @@ public class Blood : Filth
     private bool UpdatePublishPercentage(string type, ref float publishPercentageProperty, float rawPercentage)
     {
         // work out what the publish percentage should be
-        float publishPercentage = rawPercentage == 1f ? 1f : (float)(Math.Floor(rawPercentage / PublishPercentageStep) * PublishPercentageStep);
+        float publishPercentage = rawPercentage >= 1f ? 1f : (float)(Math.Floor(rawPercentage / PublishPercentageStep) * PublishPercentageStep);
 
-        Logger.Debug($"{this} at {this.Position} {type} publish value should now be {publishPercentage} (raw value {rawPercentage})");
+        Logger.LogVerbose($"{this} at {Position} {type} publish value should now be {publishPercentage} (raw value {rawPercentage})");
 
         if (publishPercentageProperty < publishPercentage)
         {
-            Logger.Debug($"{this} {type} published new value {publishPercentage}");
+            Logger.LogVerbose($"{this} {type} published new value {publishPercentage}");
             publishPercentageProperty = publishPercentage;
             return true;
         }
 
         return false;
-    }
-
-    private float GetWeightedAverage(float from, float to, float transitionPercentage)
-    {
-        float difference = (to - from) * transitionPercentage;
-        return from + difference;
     }
 }
