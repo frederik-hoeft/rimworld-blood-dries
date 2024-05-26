@@ -1,7 +1,7 @@
 ﻿
 using Verse;
 
-namespace Izzimon.BloodDries;
+namespace Th3Fr3d.BloodDries;
 
 public static class Logger
 {

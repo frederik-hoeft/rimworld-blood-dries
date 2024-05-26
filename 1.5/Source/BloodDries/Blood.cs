@@ -3,7 +3,7 @@ using System;
 using UnityEngine;
 using Verse;
 
-namespace Izzimon.BloodDries;
+namespace Th3Fr3d.BloodDries;
 
 public class Blood : Filth
 {
@@ -20,7 +20,7 @@ public class Blood : Filth
     private static readonly int MinimumAlpha = 15;
 
     private static readonly int StandardTemperature = 20;
-    private static readonly int DaysUntilFullyDryAtStandardTemperature = 1;
+    private static readonly int DaysUntilFullyDryAtStandardTemperature = 3;
 
     private float _percentageDried = 0;
     private float _percentageEroded = 0;
@@ -102,7 +102,7 @@ public class Blood : Filth
         {
             return false;  // it is frozen, don't dry any more
         }
-        else if (AmbientTemperature > StandardTemperature)
+        if (AmbientTemperature > StandardTemperature)
         {
             temperatureModifier += (AmbientTemperature - StandardTemperature) * 2 / StandardTemperature;  // add a bonus if the temperature is hot
         }

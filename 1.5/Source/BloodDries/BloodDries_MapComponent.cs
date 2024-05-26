@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Verse;
 
-namespace Izzimon.BloodDries;
+namespace Th3Fr3d.BloodDries;
 
 public class BloodDries_MapComponent(Map m) : MapComponent(m)
 {
@@ -21,10 +21,11 @@ public class BloodDries_MapComponent(Map m) : MapComponent(m)
             {
                 Thing thing = allThings[i];
 
-                if (thing.def.defName == "Filth_Blood")
+                if (thing.def == ThingDefOf.Filth_Blood || thing.def == ThingDefOf.Filth_BloodSmear)
                 {
                     if (thing is not Blood)
                     {
+                        Logger.Debug($"Found blood that is not of type {nameof(Blood)}: {thing} with def {thing.def.defName}");
                         bloodToTidyUp.Add((Filth)thing);
                     }
                 }
@@ -32,7 +33,7 @@ public class BloodDries_MapComponent(Map m) : MapComponent(m)
 
             if (bloodToTidyUp.Count > 0)
             {
-                Log.Message($"Found {bloodToTidyUp.Count} instances of blood that have the wrong class.  Replacing them with new copies.");
+                Log.Message($"Found {bloodToTidyUp.Count} instances of blood that have the wrong class. Replacing them with new copies.");
             }
 
             // now tidy them up

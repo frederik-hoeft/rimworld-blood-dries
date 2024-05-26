@@ -7,5 +7,11 @@
       <graphicClass>Izzimon.BloodDries.Graphic_Cluster</graphicClass>
     </value>
   </Operation>
+  <Operation Class="PatchOperationReplace">
+    <xpath>/Defs/ThingDef[defName="Filth_BloodSmear"]/graphicData/graphicClass</xpath>
+    <value>
+      <graphicClass>Izzimon.BloodDries.Graphic_ClusterTight</graphicClass>
+    </value>
+  </Operation>
 
 </Patch>
