@@ -40,7 +40,6 @@ public class BloodDriesMod : Mod
         Text.Font = GameFont.Medium;
         list.Label("General settings");
         Text.Font = GameFont.Small;
-        list.CheckboxLabeled("Is active", ref Settings.isActive);
         list.CheckboxLabeled("Enable logging", ref Settings.enableLogging);
         list.CheckboxLabeled("Enable verbose logging", ref Settings.enableVerboseLogging);
         list.NewColumn();
@@ -56,7 +55,7 @@ public class BloodDriesMod : Mod
         Text.Font = GameFont.Medium;
         list.Label("Standard temperature");
         Text.Font = GameFont.Small;
-        list.Label("The temperature at which blood dries at the default rate. If the temperature surpasses this threshold, blood will dry exponentially faster. (default: 20.0)");
+        list.Label("The temperature at which blood dries at the default rate. If the temperature surpasses this threshold, blood will dry exponentially faster due to the heat. (default: 20°C)");
         list.Label($"Current value: {Settings.standardTemperature:F1}");
         Settings.standardTemperature = list.Slider(val: Settings.standardTemperature, min: 0f, max: 50f);
         list.GapLine();

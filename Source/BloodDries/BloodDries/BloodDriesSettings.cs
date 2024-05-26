@@ -5,7 +5,6 @@ namespace BloodDries;
 public class BloodDriesSettings : ModSettings
 {
     // general
-    internal bool isActive = true;
     internal bool enableLogging = false;
     internal bool enableVerboseLogging = false;
 
@@ -16,7 +15,6 @@ public class BloodDriesSettings : ModSettings
 
     public override void ExposeData()
     {
-        Scribe_Values.Look(ref isActive, nameof(isActive), true);
         Scribe_Values.Look(ref enableLogging, nameof(enableLogging), false);
         Scribe_Values.Look(ref enableVerboseLogging, nameof(enableVerboseLogging), false);
 
