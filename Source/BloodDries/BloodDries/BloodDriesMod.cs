@@ -13,7 +13,7 @@ public class BloodDriesMod : Mod
     }
 
     private Vector2 _scrollPosition;
-    private const float _minContentHeight = 64f;
+    private const float _minContentHeight = 256f;
     private float _knownContentHeight = _minContentHeight;
     private bool _requiresScrolling = false;
 
@@ -44,31 +44,27 @@ public class BloodDriesMod : Mod
         list.CheckboxLabeled("Enable logging", ref Settings.enableLogging);
         list.CheckboxLabeled("Enable verbose logging", ref Settings.enableVerboseLogging);
         list.NewColumn();
-        Text.Font = GameFont.Medium;
-        list.Label("Mod Settings");
-        Text.Font = GameFont.Small;
-        list.GapLine();
         // time settings
         Text.Font = GameFont.Medium;
         list.Label("Time until fully dried");
         Text.Font = GameFont.Small;
-        list.Label("How long it takes for blood to fully dry at the standard temperature.");
-        list.Label($"Current: {DaysToDisplayString(Settings.daysUntilFullyDryAtStandardTemperature)}, default: {DaysToDisplayString(3f)}");
+        list.Label($"How long it takes for blood to fully dry at the standard temperature. (default: {DaysToDisplayString(3f)})");
+        list.Label($"Current value: {DaysToDisplayString(Settings.daysUntilFullyDryAtStandardTemperature)}");
         Settings.daysUntilFullyDryAtStandardTemperature = list.Slider(val: Settings.daysUntilFullyDryAtStandardTemperature, min: 1f / 48f, max: 15f);
         list.GapLine();
         // temperature settings
         Text.Font = GameFont.Medium;
         list.Label("Standard temperature");
         Text.Font = GameFont.Small;
-        list.Label("The temperature at which blood dries at the default rate. If the temperature surpasses this threshold, blood will dry exponentially faster.");
-        list.Label($"Current: {Settings.standardTemperature:F1}, default: 20.0");
+        list.Label("The temperature at which blood dries at the default rate. If the temperature surpasses this threshold, blood will dry exponentially faster. (default: 20.0)");
+        list.Label($"Current value: {Settings.standardTemperature:F1}");
         Settings.standardTemperature = list.Slider(val: Settings.standardTemperature, min: 0f, max: 50f);
         list.GapLine();
         Text.Font = GameFont.Medium;
         list.Label("Below freezing penalty");
         Text.Font = GameFont.Small;
-        list.Label("The penalty applied to the drying rate of blood when the temperature is below freezing. 0 means freezing temperatures have no effect, 1 means blood never dries when frozen.");
-        list.Label($"Current: {Settings.belowFreezingPenalty:F2}, default: 1.0");
+        list.Label("The penalty applied to the drying rate of blood when the temperature is below freezing. 0 means freezing temperatures have no effect, 1 means blood never dries when frozen. (default: 1.0)");
+        list.Label($"Current value: {Settings.belowFreezingPenalty:F2}");
         Settings.belowFreezingPenalty = list.Slider(val: Settings.belowFreezingPenalty, min: 0f, max: 1f);
         // FIXME: my god, this absolutely sucks... :P
         // we basically do an initial draw with a rather small height, and see if it's enough
