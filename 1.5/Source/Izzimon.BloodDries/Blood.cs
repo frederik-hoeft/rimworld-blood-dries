@@ -20,7 +20,7 @@ public class Blood : Filth
     private static readonly int MinimumAlpha = 15;
 
     private static readonly int StandardTemperature = 20;
-    private static readonly int DaysUntilFullyDryAtStandardTemperature = 3;
+    private static readonly int DaysUntilFullyDryAtStandardTemperature = 1;
 
     private float _percentageDried = 0;
     private float _percentageEroded = 0;
@@ -64,26 +64,16 @@ public class Blood : Filth
         }
         set
         {
-            Log.Error(string.Concat(new object[]
-            {
-                "Cannot set instance color on non-ThingWithComps ",
-                LabelCap,
-                " at ",
-                Position,
-                "."
-            }));
+            Log.Error($"Cannot set instance color on non-ThingWithComps {LabelCap} at {Position}.");
         }
     }
 
     public override void TickLong()
     {
         bool changed = false;
-
         changed |= DryMore();
-
         changed |= ErodeMore();
-
-        if (_percentageEroded == 1f)
+        if (_percentageEroded >= 1f)
         {
             Destroy(DestroyMode.Vanish);
         }
@@ -140,7 +130,7 @@ public class Blood : Filth
         // work out what the publish percentage should be
         float publishPercentage = rawPercentage == 1f ? 1f : (float)(Math.Floor(rawPercentage / PublishPercentageStep) * PublishPercentageStep);
 
-        Logger.Debug($"{this} {type} publish value should now be {publishPercentage} (raw value {rawPercentage})");
+        Logger.Debug($"{this} at {this.Position} {type} publish value should now be {publishPercentage} (raw value {rawPercentage})");
 
         if (publishPercentageProperty < publishPercentage)
         {
