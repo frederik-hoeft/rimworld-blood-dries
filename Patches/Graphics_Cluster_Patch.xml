@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+    <Operation Class="PatchOperationReplace">
+        <xpath>/Defs/ThingDef[thingClass="Filth"]/graphicData/graphicClass</xpath>
+        <value>
+            <graphicClass>BloodDries.Graphics.ColoredGraphic_Cluster</graphicClass>
+        </value>
+    </Operation>
+    <Operation Class="PatchOperationReplace">
+        <xpath>/Defs/ThingDef[defName="Filth_BloodSmear"]/graphicData/graphicClass</xpath>
+        <value>
+            <graphicClass>BloodDries.Graphics.ColoredGraphic_ClusterTight</graphicClass>
+        </value>
+    </Operation>
+</Patch>
