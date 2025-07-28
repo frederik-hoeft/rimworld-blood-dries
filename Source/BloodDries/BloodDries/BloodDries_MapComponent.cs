@@ -4,7 +4,7 @@ using Verse;
 
 namespace BloodDries;
 
-public class BloodDries_MapComponent(Map m) : MapComponent(m)
+public sealed class BloodDries_MapComponent(Map m) : MapComponent(m)
 {
     public override void FinalizeInit()
     {

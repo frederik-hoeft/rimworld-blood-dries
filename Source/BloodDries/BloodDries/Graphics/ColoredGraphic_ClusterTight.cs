@@ -3,7 +3,7 @@ using Verse;
 
 namespace BloodDries.Graphics;
 
-public class ColoredGraphic_ClusterTight : Graphic_ClusterTight
+public sealed class ColoredGraphic_ClusterTight : Graphic_ClusterTight
 {
     private readonly ColoredGraphic_ClusterImplementation _implementation;
 

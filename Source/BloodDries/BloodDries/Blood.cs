@@ -5,15 +5,15 @@ using Verse;
 
 namespace BloodDries;
 
-public class Blood : Filth
+public sealed class Blood : Filth
 {
     // RGBA 131, 34, 34, 180
-    private static readonly Color _freshBloodColor = new(131f / 255f, 34f / 255f, 34f / 255f, 180f / 255f);
+    private static readonly Color s_freshBloodColor = new(131f / 255f, 34f / 255f, 34f / 255f, 180f / 255f);
     // RGBA 35, 14, 14, 15
-    private static readonly Color _driedBloodColor = new(35f / 255f, 14f / 255f, 14f / 255f, 15f / 255f);
+    private static readonly Color s_driedBloodColor = new(35f / 255f, 14f / 255f, 14f / 255f, 15f / 255f);
 
     // we don't want to publish a whole range of shades, as that will fill up the graphic database 
-    private const float PublishPercentageStep = 0.20f;  // only publish every 20% step change
+    private const float PUBLISH_PERCENTAGE_STEP = 0.20f;  // only publish every 20% step change
 
     private float _percentageDried = 0;
     private float _percentageEroded = 0;
@@ -41,7 +41,7 @@ public class Blood : Filth
 
     public override Color DrawColor
     {
-        get => _freshBloodColor.Lerp(_driedBloodColor, percentage: _driedPublishPercentage, alphaPercentage: _erodedPublishPercentage);
+        get => s_freshBloodColor.Lerp(s_driedBloodColor, percentage: _driedPublishPercentage, alphaPercentage: _erodedPublishPercentage);
         set => Log.Error($"[{nameof(BloodDries)}] Cannot set instance color on non-ThingWithComps {LabelCap} at {Position}.");
     }
 
@@ -63,8 +63,8 @@ public class Blood : Filth
     public override void ExposeData()
     {
         base.ExposeData();
-        Scribe_Values.Look(ref _percentageDried, "percentageDried", 0f, false);
-        Scribe_Values.Look(ref _percentageEroded, "percentageEroded", 0f, false);
+        Scribe_Values.Look(ref _percentageDried, "percentageDried", defaultValue: 0f, forceSave: false);
+        Scribe_Values.Look(ref _percentageEroded, "percentageEroded", defaultValue: 0f, forceSave: false);
     }
 
     private bool DryMore()
@@ -111,7 +111,7 @@ public class Blood : Filth
     private bool UpdatePublishPercentage(string type, ref float publishPercentageProperty, float rawPercentage)
     {
         // work out what the publish percentage should be
-        float publishPercentage = rawPercentage >= 1f ? 1f : (float)(Math.Floor(rawPercentage / PublishPercentageStep) * PublishPercentageStep);
+        float publishPercentage = rawPercentage >= 1f ? 1f : (float)(Math.Floor(rawPercentage / PUBLISH_PERCENTAGE_STEP) * PUBLISH_PERCENTAGE_STEP);
 
         Logger.LogVerbose($"{this} at {Position} {type} publish value should now be {publishPercentage} (raw value {rawPercentage})");
 
