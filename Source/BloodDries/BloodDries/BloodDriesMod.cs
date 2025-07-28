@@ -3,7 +3,7 @@ using Verse;
 
 namespace BloodDries;
 
-public class BloodDriesMod : Mod
+public sealed class BloodDriesMod : Mod
 {
     public static BloodDriesSettings Settings { get; private set; } = null!;
 
@@ -13,8 +13,8 @@ public class BloodDriesMod : Mod
     }
 
     private Vector2 _scrollPosition;
-    private const float _minContentHeight = 256f;
-    private float _knownContentHeight = _minContentHeight;
+    private const float MIN_CONTENT_HEIGHT = 256f;
+    private float _knownContentHeight = MIN_CONTENT_HEIGHT;
     private bool _requiresScrolling = false;
 
     public override void DoSettingsWindowContents(Rect canvas)
@@ -23,7 +23,7 @@ public class BloodDriesMod : Mod
         if (Settings is null)
         {
             Logger.Error("Settings was null!");
-            throw new ArgumentNullException(nameof(Settings));
+            throw new InvalidOperationException($"Settings was null in {nameof(BloodDriesMod)}.{nameof(DoSettingsWindowContents)}. This should never happen.");
         }
         float scrollbarMargin = _requiresScrolling ? 25f : 0f;
         Listing_Standard list = new()
@@ -71,12 +71,12 @@ public class BloodDriesMod : Mod
         // - otherwise CurHeight will be smaller than a known epsilon, so we start at the epsilon and double it with each draw until it's big enough
         // - once we have enough space, we clamp the height to the known content height
         // if the content is too small to fit everything, CurHeight will be 23.something, (don't ask me why)
-        if (list.CurHeight < _minContentHeight)
+        if (list.CurHeight < MIN_CONTENT_HEIGHT)
         {
             // so on each draw, we double the known content height until it's big enough
             // yes, we could also just set it to an unreasonably high value, but that seems a bit wasteful
             // we should arrive at the correct height in O(log n) iterations anyway
-            _knownContentHeight = Mathf.Max(2 * _knownContentHeight, _minContentHeight);
+            _knownContentHeight = Mathf.Max(2 * _knownContentHeight, MIN_CONTENT_HEIGHT);
         }
         else
         {

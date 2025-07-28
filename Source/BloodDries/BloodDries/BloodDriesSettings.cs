@@ -2,7 +2,7 @@
 
 namespace BloodDries;
 
-public class BloodDriesSettings : ModSettings
+public sealed class BloodDriesSettings : ModSettings
 {
     // general
     internal bool enableLogging = false;
